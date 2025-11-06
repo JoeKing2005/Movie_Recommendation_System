@@ -6,8 +6,40 @@ import email_icon from '../assets/email icon.png'
 import password_icon from '../assets/password icon.png'
 import movie_icon from '../assets/movie icon.png'
 import { Link } from 'react-router-dom';
+import { useRef } from 'react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase-config.js';
 
 const SignUp = () => {
+    const usernameRef = useRef();
+    const emailRef = useRef();
+    const passwordRef = useRef();
+
+    async function handleSubmit() {
+      await createUserWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        fetch("localhost:3001/api/web/users/profile", {
+          method: "POST",
+          body: JSON.stringify({
+              uid: user.uid,
+              email: emailRef.current.value,
+              username: usernameRef.current.value
+          }),
+          headers: {
+              "Authorization": `Bearer ${user.getIdToken()}`
+          }
+        })
+        .then(res => res.json())
+        .then(res => console.log(res));
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+      });
+    }
+
     return (
         <>
       <div className='top-right-container'>
@@ -29,23 +61,19 @@ const SignUp = () => {
         <div className="inputs">
           <div className="input">
             <img src={person_icon} height={25} width={25} alt="" />
-            <input type="text" placeholder='First Name' />
-          </div>
-          <div className="input">
-            <img src={person_icon} height={25} width={25} alt="" />
-            <input type="text" placeholder='Last Name' />
+            <input ref={usernameRef} type="text" placeholder='Username' />
           </div>
           <div className="input">
             <img src={email_icon} height={25} width={25} alt="" />
-            <input type="email" placeholder='Email' />
+            <input ref={emailRef} type="email" placeholder='Email' />
           </div>
           <div className="input">
             <img src={password_icon} height={25} width={25} alt="" />
-            <input type="password" placeholder='Password' />
+            <input ref={passwordRef} type="password" placeholder='Password' />
           </div>
         </div>
 
-          <div className="submit">Sign Up</div>
+          <div onClick={handleSubmit} className="submit">Sign Up</div>
         </div>
     </>
   )

@@ -13,8 +13,9 @@ async function authenticateToken(req, res, next) {
 
   try {
     const decodedToken = await fb.getAuth().verifyIdToken(idToken);
-    req.user = decodedToken;
-    console.log(`User ${req.user.uid} authenticated.`);
+    req.body.uid = decodedToken.uid;
+    req.body.email = decodedToken.email;
+    console.log(`User ${req.body.uid} authenticated.`);
     next();
   } catch (error) {
     console.error('Error verifying Firebase ID token:', error);

@@ -29,7 +29,7 @@ if (isDevelopment()) {
 }
 
 const expressApp = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 expressApp.use(cors());
 expressApp.use(express.json());
