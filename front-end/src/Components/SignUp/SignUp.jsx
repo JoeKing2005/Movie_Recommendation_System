@@ -17,9 +17,14 @@ const SignUp = () => {
 
     async function handleSubmit() {
       await createUserWithEmailAndPassword(auth, emailRef.current.value, passwordRef.current.value)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
-        fetch("localhost:3001/api/web/users/profile", {
+        const idToken = await user.getIdToken();
+
+        console.log("Frontend attempting to send username:", usernameRef.current.value);
+        console.log("Frontend attempting to send email:", emailRef.current.value);
+
+        await fetch(`http://localhost:3001/api/web/users/${user.uid}/profile`, {
           method: "POST",
           body: JSON.stringify({
               uid: user.uid,
@@ -27,7 +32,8 @@ const SignUp = () => {
               username: usernameRef.current.value
           }),
           headers: {
-              "Authorization": `Bearer ${user.getIdToken()}`
+              "Authorization": `Bearer ${idToken}`,
+              "Content-Type": "application/json"
           }
         })
         .then(res => res.json())
