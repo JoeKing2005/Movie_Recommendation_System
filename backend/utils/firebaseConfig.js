@@ -1,20 +1,10 @@
-import { initializeApp, getApps, applicationDefault } from 'firebase-admin/app';
+import admin from 'firebase-admin';
+import serviceAccount from '../key.json' with { type: 'json' };
 
-class FirebaseConfig {
-    static app;
+const app = admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://movie-recommendation-sys-9b138-default-rtdb.europe-west1.firebasedatabase.app"
+});
 
-    static async getFirebaseApp() {
-        const firebaseConfig = {
-            credential: applicationDefault(),
-            databaseURL: process.env.DATABASE_URL
-        };
-
-        if (getApps().length === 0) {
-            this.app = initializeApp(firebaseConfig);
-        } else {
-            this.app = getApps()[0];
-        }
-    }
-}
-
-export default FirebaseConfig;
+export const auth = admin.auth(app);
+export const db = admin.database(app);
