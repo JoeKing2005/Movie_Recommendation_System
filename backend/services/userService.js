@@ -1,22 +1,19 @@
 import { NameValidationError, EmailValidationError } from "../utils/errors.js";
 
 class UserService {
-    static validateUserProfileInputs(firstName, lastName, email) {
+    static validateUserProfileInputs(username, email) {
         const nameRegex = /^(?![- ])[a-z]*(?:[- ][a-z][a-z]*)*[^- ]$/im;
         const emailRegex = /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/g // Source: https://regex101.com/r/lHs2R3/1
 
-        if (!firstName || firstName.trim() === '' || !nameRegex.test(firstName)) {
-            throw new NameValidationError();
-        } else if (!lastName || lastName.trim() === '' || !nameRegex.test(lastName)) {
-            throw new NameValidationError();
-        } else if (!email || email.trim() === '' || !emailRegex.test(email)) {
+        if (username.length < 3) throw new NameValidationError();
+        else if (!email || email.trim() === '' || !emailRegex.test(email)) {
             throw new EmailValidationError();
         }
     }
 
-    static async createUserProfile(Model, uid, firstName, lastName, email, dateOfBirth) {
+    static async createUserProfile(Model, uid, username, email) {
         try {
-            this.validateUserProfileInputs(firstName, lastName, email);
+            this.validateUserProfileInputs(username, email);
         } catch (e) {
             throw e;
         }
@@ -24,12 +21,10 @@ class UserService {
         const date = new Date().toISOString();
 
         const profileData = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        dateOfBirth: dateOfBirth,
-        createdAt: date,
-        updatedAt: date
+            username: username,
+            email: email,
+            createdAt: date,
+            updatedAt: date
         };
 
         return await Model.createUserProfile(uid, profileData);
@@ -39,18 +34,16 @@ class UserService {
         return await Model.getUserProfile(uid);
     }
 
-    static async updateUserProfile(Model, uid, firstName, lastName, email, dateOfBirth) {
+    static async updateUserProfile(Model, uid, username, email) {
         try {
-            this.validateUserProfileInputs(firstName, lastName, email);
+            this.validateUserProfileInputs(username, email);
         } catch (e) {
             throw e;
         }
 
         const profileDataUpdate = {
-        firstName: firstName,
-        lastName: lastName,
+        username: username,
         email: email,
-        dateOfBirth: dateOfBirth,
         updatedAt: new Date().toISOString()
         };
 

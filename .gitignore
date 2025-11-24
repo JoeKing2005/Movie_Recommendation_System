@@ -6,3 +6,4 @@ node_modules/
 .github/*
 key.json
 backend/key.json
+/key.*
