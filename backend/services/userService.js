@@ -2,13 +2,11 @@ import { NameValidationError, EmailValidationError } from "../utils/errors.js";
 
 class UserService {
     static validateUserProfileInputs(username, email) {
-        const nameRegex = /^[a-z0-9_]{4,16}$/g
+        const nameRegex = /^(?![- ])[a-z]*(?:[- ][a-z][a-z]*)*[^- ]$/im;
         const emailRegex = /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/g // Source: https://regex101.com/r/lHs2R3/1
 
-        username = username.toLowerCase();
-        if (!username || username.trim() === '' || !nameRegex.test(username)) {
-            throw new NameValidationError();
-        } else if (!email || email.trim() === '' || !emailRegex.test(email)) {
+        if (username.length < 3) throw new NameValidationError();
+        else if (!email || email.trim() === '' || !emailRegex.test(email)) {
             throw new EmailValidationError();
         }
     }
@@ -23,10 +21,10 @@ class UserService {
         const date = new Date().toISOString();
 
         const profileData = {
-        username: username,
-        email: email,
-        createdAt: date,
-        updatedAt: date
+            username: username,
+            email: email,
+            createdAt: date,
+            updatedAt: date
         };
 
         return await Model.createUserProfile(uid, profileData);
