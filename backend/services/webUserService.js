@@ -57,7 +57,7 @@ class WebUserService extends UserService {
         .then(data => results = data)
         .catch(error => console.error("Error:", error));
 
-        if (results) return questionnaire;
+        if (results) return results;
         else return null;
     }
 }
