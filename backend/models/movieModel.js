@@ -6,7 +6,7 @@ class MovieModel {
   static async addMovie(movie) {
     try {
       const movieRef = db.ref(this._dbRef);
-      const newMovieRef = push(movieRef);
+      const newMovieRef = movieRef.push();
 
       const key = newMovieRef.key;
 
@@ -35,7 +35,7 @@ class MovieModel {
     const generatedKeys = [];
 
     for (const movie of movies) {
-      const newMovieRef = push(movieRef);
+      const newMovieRef = movieRef.push();
       const key = newMovieRef.key;
 
       if (!key) {
