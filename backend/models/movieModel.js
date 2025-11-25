@@ -20,7 +20,7 @@ class MovieModel {
         id: key
       };
 
-      await set(newMovieRef, movieWithId);
+      await newMovieRef.set(movieWithId);
 
       return key;
     } catch (e) {
@@ -54,7 +54,7 @@ class MovieModel {
     }
 
     try {
-      await update(movieRef, updates);
+      await movieRef.update(updates);
       console.log(`Successfully added ${movies.length} items.`);
       return generatedKeys;
     } catch (e) {
