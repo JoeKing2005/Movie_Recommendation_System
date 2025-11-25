@@ -21,6 +21,8 @@ When using a route that expects MP3 data include the following HTTP header:
 */
 
 /**
+ * Get User Profile
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/profile
  * @param req
@@ -40,6 +42,8 @@ When using a route that expects MP3 data include the following HTTP header:
 router.get('/:uid/profile', authenticateToken, WebUserController.getUserProfile);
 
 /**
+ * Create User Profile
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/profile
  * @param req
@@ -61,6 +65,8 @@ router.get('/:uid/profile', authenticateToken, WebUserController.getUserProfile)
 router.post('/:uid/profile', authenticateToken, WebUserController.createUserProfile);
 
 /**
+ * Update User Profile
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/profile
  * @param req
@@ -82,6 +88,8 @@ router.post('/:uid/profile', authenticateToken, WebUserController.createUserProf
 router.put('/:uid/profile', authenticateToken, WebUserController.updateUserProfile);
 
 /**
+ * Delete User Profile
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/profile
  * @param req
@@ -95,6 +103,8 @@ router.put('/:uid/profile', authenticateToken, WebUserController.updateUserProfi
 router.delete('/:uid/profile', authenticateToken, WebUserController.deleteUserProfile);
 
 /**
+ * Submit Questionnaire
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/questionnaire
  * @param req
@@ -120,6 +130,8 @@ router.delete('/:uid/profile', authenticateToken, WebUserController.deleteUserPr
 router.post('/:uid/questionnaire', authenticateToken, WebUserController.submitQuestionnaire);
 
 /**
+ * Get Bookmarks
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/bookmarks
  * @param req
@@ -137,6 +149,8 @@ router.post('/:uid/questionnaire', authenticateToken, WebUserController.submitQu
 router.get('/:uid/bookmarks', authenticateToken, WebUserController.getBookmarks);
 
 /**
+ * Add Bookmark
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/bookmarks/:id
  * @param req
@@ -150,6 +164,8 @@ router.get('/:uid/bookmarks', authenticateToken, WebUserController.getBookmarks)
 router.post('/:uid/bookmarks/:id', authenticateToken, WebUserController.addBookmark);
 
 /**
+ * Delete Bookmark
+ * 
  * Requires Authentication
  * URL: /api/web/users/:uid/bookmarks/:id
  * @param req
