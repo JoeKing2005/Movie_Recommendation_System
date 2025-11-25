@@ -9,6 +9,14 @@ class MovieService {
         return await MovieModel.getMovies();
     }
 
+    static async getMoviesByIds(movies) {
+        const movieDetails = [];
+        for (movie of movies) {
+            movieDetails.push(await MovieModel.getMovie(movie));
+        }
+        return movieDetails;
+    }
+
     static async addMovie(movie) {
         return await MovieModel.addMovie(movie);
     }

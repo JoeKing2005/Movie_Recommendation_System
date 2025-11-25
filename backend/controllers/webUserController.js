@@ -1,5 +1,6 @@
 import UserController from "./userController.js";
 import WebUserService from "../services/webUserService.js";
+import MovieService from "../services/movieService.js";
 
 class WebUserController extends UserController {
     static async createUserProfile(req, res) {
@@ -27,8 +28,9 @@ class WebUserController extends UserController {
             }
 
             const result = await WebUserService.submitQuestionnaire(questionnaire);
-            if (result) res.status(201).json(result);
-            else throw("Failure submitting questionnaire.");
+            if (result) {
+                return await MovieService.getMoviesByIds(result);
+            } else throw("Failure submitting questionnaire.");
         } catch (e) {
             console.error(e.message);
             console.trace();
@@ -41,7 +43,7 @@ class WebUserController extends UserController {
         try {
             const uid = req.user.uid;
             const bookmarks = await WebUserService.getBookmarks(uid);
-            if (bookmarks) return res.status(201).json(bookmarks);
+            if (bookmarks) return res.status(200).json(bookmarks);
             else {
                 res.status(404).send("No bookmarks found.");
             }
@@ -88,7 +90,7 @@ class WebUserController extends UserController {
             }
 
             const deletedID = await WebUserService.removeBookmark(uid, bookmarkID);
-            if (deletedID) return res.status(201).send(`Removed bookmark with ID ${removedID}`);
+            if (deletedID) return res.status(204).send(`Removed bookmark with ID ${removedID}`);
             else {
                 res.status(404);
                 throw("No bookmark found with ID", bookmarkID);

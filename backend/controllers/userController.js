@@ -50,7 +50,7 @@ class UserController {
 
     static async deleteUserProfile(Service, req, res) {
         try {
-            if (await Service.deleteUserProfile(req.user.uid)) res.status(204).send("User profile successfully deleted.")
+            if (await Service.deleteUserProfile(req.user.uid)) res.status(204).send("User profile successfully deleted.");
             else res.status(404).send("User Profile not found.");
         } catch (e) {
             console.error(e.message);
