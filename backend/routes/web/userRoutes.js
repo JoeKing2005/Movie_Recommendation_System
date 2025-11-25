@@ -22,6 +22,7 @@ When using a route that expects MP3 data include the following HTTP header:
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/profile
  * @param req
  * Method: GET
  * Body: None
@@ -40,6 +41,7 @@ router.get('/:uid/profile', authenticateToken, WebUserController.getUserProfile)
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/profile
  * @param req
  * Method: POST
  * Body: {
@@ -60,6 +62,7 @@ router.post('/:uid/profile', authenticateToken, WebUserController.createUserProf
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/profile
  * @param req
  * Method: PUT
  * Body: {
@@ -80,6 +83,7 @@ router.put('/:uid/profile', authenticateToken, WebUserController.updateUserProfi
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/profile
  * @param req
  * Method: DELETE
  * Body: None
@@ -92,6 +96,7 @@ router.delete('/:uid/profile', authenticateToken, WebUserController.deleteUserPr
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/questionnaire
  * @param req
  * Method: POST
  * Body: {
@@ -116,6 +121,7 @@ router.post('/:uid/questionnaire', authenticateToken, WebUserController.submitQu
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/bookmarks
  * @param req
  * Method: GET
  * Body: None
@@ -132,6 +138,7 @@ router.get('/:uid/bookmarks', authenticateToken, WebUserController.getBookmarks)
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/bookmarks/:id
  * @param req
  * Method: POST
  * Body: None
@@ -144,6 +151,7 @@ router.post('/:uid/bookmarks/:id', authenticateToken, WebUserController.addBookm
 
 /**
  * Requires Authentication
+ * URL: /api/web/users/:uid/bookmarks/:id
  * @param req
  * Method: DELETE
  * Body: None
