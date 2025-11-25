@@ -21,6 +21,8 @@ When using a route that expects MP3 data include the following HTTP header:
 */
 
 /**
+ * Get Movie
+ * 
  * URL: /api/movies/:id
  * @param req
  * Method: GET
@@ -37,6 +39,8 @@ When using a route that expects MP3 data include the following HTTP header:
 router.get('/:id', MovieController.getMovie);
 
 /**
+ * Get All Movies
+ * 
  * URL: /api/movies/
  * @param req
  * Method: GET
@@ -57,6 +61,8 @@ router.get('/:id', MovieController.getMovie);
 router.get('/', MovieController.getMovies);
 
 /**
+ * Add Movie
+ * 
  * Requires Authentication
  * URL: /api/movies/
  * @param req
@@ -73,6 +79,8 @@ router.get('/', MovieController.getMovies);
 router.post('/', authenticateToken, MovieController.addMovie);
 
 /**
+ * Add All Movies
+ * 
  * URL: /api/movies/addAll
  * @param req
  * Method: POST
