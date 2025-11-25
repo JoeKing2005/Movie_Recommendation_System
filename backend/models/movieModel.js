@@ -6,7 +6,7 @@ class MovieModel {
   static async addMovie(movie) {
     try {
       const movieRef = db.ref(this._dbRef);
-      const newMovieRef = push(movieRef);
+      const newMovieRef = movieRef.push();
 
       const key = newMovieRef.key;
 
@@ -20,7 +20,7 @@ class MovieModel {
         id: key
       };
 
-      await set(newMovieRef, movieWithId);
+      await newMovieRef.set(movieWithId);
 
       return key;
     } catch (e) {
@@ -35,7 +35,7 @@ class MovieModel {
     const generatedKeys = [];
 
     for (const movie of movies) {
-      const newMovieRef = push(movieRef);
+      const newMovieRef = movieRef.push();
       const key = newMovieRef.key;
 
       if (!key) {
@@ -54,7 +54,7 @@ class MovieModel {
     }
 
     try {
-      await update(movieRef, updates);
+      await movieRef.update(updates);
       console.log(`Successfully added ${movies.length} items.`);
       return generatedKeys;
     } catch (e) {
