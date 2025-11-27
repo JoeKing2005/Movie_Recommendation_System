@@ -24,6 +24,9 @@ const LogIn = () => {
                 <div className='signUpLink'>
                 Need an Account? <Link to="/signup">Sign up</Link>
                 </div>
+                <div className="resetLink">
+                    Forgot Password? <Link to="/reset">Reset Password</Link>
+                </div>
             </div>
             <div className="inputs">
                 <div className="input">
