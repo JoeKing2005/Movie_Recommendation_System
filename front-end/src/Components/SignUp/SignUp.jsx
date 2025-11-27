@@ -1,5 +1,5 @@
 import React from "react";
-import './SignUp.css'
+import './SignUp.css'  
 
 import person_icon from '../assets/person icon.png'
 import email_icon from '../assets/email icon.png'
@@ -86,6 +86,3 @@ const SignUp = () => {
 }
 
 export default SignUp
-
-
-

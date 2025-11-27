@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import SignUp from "./Components/SignUp/SignUp";
 import LogIn from "./Components/LogIn/Login";
+import ResetPassword from "./Components/ResetPassword/resetPassword";
 
 function Home() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<LogIn />} />
+      <Route path="/reset" element={<ResetPassword/>} /> 
     </Routes>
   );
 }
