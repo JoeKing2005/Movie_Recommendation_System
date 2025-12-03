@@ -1,4 +1,4 @@
-name: Build backend and frontend
+name: Test backend and frontend
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-python:
+  test-python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,7 +16,7 @@ jobs:
         run: 
           ls
 
-  build-node:
+  test-node:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,16 +24,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install and Test Backend
+      - name: Test Backend
         working-directory: ./backend/
         run:
           npm ci
           npm run build --if-present
           npm test
-      - name: Install and Test Frontend
+      - name: Test Frontend
         working-directory: ./front-end/
         run:
           npm ci
-          npm run build --if-present
           npm test
     
