@@ -14,8 +14,7 @@ class UserController {
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 
@@ -27,8 +26,7 @@ class UserController {
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 
@@ -43,8 +41,7 @@ class UserController {
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 
@@ -55,8 +52,7 @@ class UserController {
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 }
