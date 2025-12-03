@@ -22,18 +22,22 @@ class WebUserController extends UserController {
         try {
             const questionnaire = req.body;
 
-            for (q in questionnaire) {
-                if (questionnaire[q] == "") return res.status(400).send("All questions must be answered.");
+            for (const q in questionnaire) {
+                if (questionnaire[q] === "") {
+                    return res.status(400).send("All questions must be answered.");
+                }
             }
 
             const result = await WebUserService.submitQuestionnaire(questionnaire);
             if (result) {
                 return res.status(200).json(result);
-            } else throw("Failure submitting questionnaire.");
+            } else {
+                return res.status(500).send("Failure submitting questionnaire.");
+            }
         } catch (e) {
-            console.error(e.message);
+            console.error(e?.message || e);
             console.trace();
-            return res.status(500).send(e.message);
+            return res.status(500).send(e?.message || "Internal Server Error");
         }
     }
 
@@ -58,20 +62,18 @@ class WebUserController extends UserController {
             const uid = req.user.uid;
 
             if (!movieData || !movieData.title) {
-                res.status(400);
-                throw("Invalid movie data provided.");
+                return res.status(400).send("Invalid movie data provided.");
             }
 
             const addedBookmark = await WebUserService.addBookmark(uid, movieData);
             if (addedBookmark) return res.status(201).json(addedBookmark);
             else {
-                res.status(500);
-                throw("Failed to add bookmark.");
+                return res.status(500).send("Failed to add bookmark.");
             }
         } catch (e) {
-            console.error(e.message);
+            console.error(e?.message || e);
             console.trace();
-            return res.status(500).send(e.message);
+            return res.status(500).send(e?.message || "Internal Server Error");
         }
     }
 
@@ -81,20 +83,18 @@ class WebUserController extends UserController {
             const uid = req.user.uid;
 
             if (!bookmarkId) {
-                res.status(400);
-                throw("No bookmark ID specified.");
+                return res.status(400).send("No bookmark ID specified.");
             }
 
             const deletedId = await WebUserService.removeBookmark(uid, bookmarkId);
             if (deletedId) return res.status(204).send(`Removed bookmark with ID ${deletedId}`);
             else {
-                res.status(404);
-                throw("No bookmark found with ID", bookmarkId);
+                return res.status(404).send(`No bookmark found with ID ${bookmarkId}`);
             }
         } catch (e) {
-            console.error(e.message);
+            console.error(e?.message || e);
             console.trace();
-            return res.status(500).send(e.message);
+            return res.status(500).send(e?.message || "Internal Server Error");
         }
     }
 
