@@ -1,12 +1,40 @@
-import React from "react";
+import React, { useRef } from "react";
 import './LogIn.css'
 
 import email_icon from '../assets/email icon.png'
 import password_icon from '../assets/password icon.png'
 import movie_icon from '../assets/movie icon.png'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../firebase-config.js';
 
 const LogIn = () => {
+    const emailRef = useRef();
+    const passwordRef = useRef();
+    const navigate = useNavigate();
+
+    const handleLogin = async () => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(
+                auth,
+                emailRef.current.value,
+                passwordRef.current.value
+            );
+            const user = userCredential.user;
+            const idToken = await user.getIdToken();
+
+            const res = await fetch(`http://localhost:3001/api/web/users/${user.uid}/profile`, {
+                headers: {authorization: `Bearer ${idToken}`}
+            });
+            const profile = await res.json();
+            console.log("User profile:", profile);
+
+            navigate("/questionnaire")
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
+    };
 
     return (
     <>
@@ -31,18 +59,17 @@ const LogIn = () => {
             <div className="inputs">
                 <div className="input">
                     <img src={email_icon} height={25} width={25} alt="" />
-                    <input type="email" placeholder='Email' />
+                    <input ref={emailRef} type="email" placeholder='Email' />
                 </div>
                 <div className="input">
                     <img src={password_icon} height={25} width={25} alt="" />
-                    <input type="password" placeholder='Password' />
+                    <input ref={passwordRef} type="password" placeholder='Password' />
                 </div>
         </div>
         
         <div className="submit-container">
-        <Link to="/welcome" className="submit">Log In</Link>
+        <button onClick={handleLogin} className="submit">Log In</button>
         </div>
-
       </div>
     </>
     )
