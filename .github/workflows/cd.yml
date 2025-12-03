@@ -7,7 +7,7 @@ on:
 jobs:
   # Run CI script
   run-ci:
-    uses: .github/workflows/ci.yml
+    uses: .github/workflows/ci.yml@main
 
   create-release:
     runs-on: ubuntu-latest
