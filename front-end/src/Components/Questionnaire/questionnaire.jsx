@@ -1,7 +1,76 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './questionnaire.css';
 
+
 const Questionnaire = () => {
+
+    const uid = "USER_ID";
+    const authToken = "USER_AUTH_TOKEN";
+
+    const [bookmarks, setBookmarks] = useState([])
+
+    useEffect(() => {
+    const fetchBookmarks = async () => {
+        try {
+            const res = await fetch(`http://localhost:5001/api/web/users/${uid}/bookmarks`, {
+                headers: { Authorization: `Bearer ${authToken}`}
+            });
+
+            if (!res.ok) throw new Error("Could not fetch bookmarks");
+
+            const data = await res.json();
+            setBookmarks(data);
+        } catch (err) {
+            console.error(err);
+            setBookmarks([]);
+        }
+    };
+
+    fetchBookmarks();
+}, []);
+
+const toggleBookmark = async (movie) => {
+    const existing = bookmarks.find(b => b.title === movie.title);
+
+    if (existing) {
+        try {
+            const res = await fetch(`http://localhost:5001/api/web/users/${uid}/bookmarks/${existing.bookmarkID}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${authToken}` }
+            });
+            if (res.status === 204) {
+                setBookmarks(bookmarks.filter(b => b.bookmarkID !== existing.bookmarkID));
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    } else {
+        try {
+            const id = movie.title.replace(/\s+/g, "_");
+
+            const res = await fetch(`http://localhost:5001/api/web/users/${uid}/bookmarks/${id}`, {
+                method: 'POST',
+                headers : {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken}`
+                },
+                body: JSON.stringify(movie)
+            });
+
+            if (res.status === 201) {
+                const newBookmark = { ...movie, bookmarkID: id };
+                setBookmarks([...bookmarks, newBookmark]);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+};
+
+const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
+
+
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
@@ -291,6 +360,10 @@ const Questionnaire = () => {
                       <br />
                       {movie.match_reason}
                     </div>
+                    <button className={`btnBookmark ${isBookmarked(movie) ? 'bookmarked' : ''}`}
+                    onClick={() => toggleBookmark(movie)} >
+                        {isBookmarked(movie) ? '★ Bookmarked' : '☆ Bookmark'}
+                    </button>
                   </div>
                 ))}
               </div>
@@ -298,6 +371,12 @@ const Questionnaire = () => {
               <button className="btnPrimary" style={{ margin: "30px auto", display: "block" }} onClick={restart}>
                 Start Over
               </button>
+
+              <Link to="/bookmarks">
+              <button className="btnPrimary">
+                View My Bookmarks
+              </button>
+              </Link>
             </div>
           )}
 
