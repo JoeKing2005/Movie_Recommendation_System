@@ -1,0 +1,106 @@
+
+
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes slideUp { from {transform: translateY(30px); opacity:0;} to {transform:translateY(0); opacity:1;} }
+@keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.innerContainer { max-width: 1200px; margin: 0 auto; }
+
+.header { text-align: center; color: white; margin-bottom: 40px; }
+.title { font-size: 3.5rem; margin-bottom: 10px; }
+.subtitle { opacity: 0.9; font-size: 1.2rem; }
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+
+.stepIndicator { display: flex; justify-content: center; margin-bottom: 40px; gap: 10px; }
+.step {
+  width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.3s;
+}
+.stepActive { background: #667eea; color: white; transform: scale(1.2); }
+.stepCompleted { background: #4caf50; color: white; }
+
+.questionContainer { animation: fadeIn 0.4s; }
+.questionTitle { text-align: center; margin-bottom: 30px; font-size: 1.8rem; }
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+.optionsGridLarge {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.optionBtn {
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 1rem;
+}
+.optionBtnSelected { background: #667eea; color: white; border-color: #667eea; }
+
+.input {
+  width: 100%; padding: 15px; border-radius: 10px;
+  border: 2px solid #ccc; margin-bottom: 20px;
+}
+
+.actorTags { display: flex; gap: 10px; flex-wrap: wrap; }
+.actorTag {
+  background: #667eea; padding: 8px 15px;
+  color: white; border-radius: 20px;
+  display: flex; gap: 10px;
+}
+.removeBtn { border: none; background: transparent; color: white; cursor: pointer; }
+
+.navButtons { display: flex; justify-content: space-between; margin-top: 30px; }
+.btnPrimary {
+  padding: 15px 40px; background: #667eea; color: white;
+  border-radius: 12px; cursor: pointer; border: none;
+}
+.btnSecondary {
+  padding: 15px 40px; background: #ccc;
+  border-radius: 12px; cursor: pointer; border: none;
+}
+
+
+.loadingContainer { text-align: center; padding: 60px; }
+.spinner {
+  width: 50px; height: 50px; border: 4px solid #eee;
+  border-top: 4px solid #667eea;
+  border-radius: 50%; animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+
+.movieGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; }
+.movieCard {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 25px; border-radius: 15px; color: white;
+}
+.movieTitle { font-size: 1.4rem; font-weight: bold; }
+.movieYear { opacity: 0.8; }
+.genreTags { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.genreTag { padding: 5px 12px; background: rgba(255,255,255,0.2); border-radius: 12px; }
+.movieRating { display: flex; gap: 10px; margin-bottom: 10px; }
+.matchBox { background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; }
