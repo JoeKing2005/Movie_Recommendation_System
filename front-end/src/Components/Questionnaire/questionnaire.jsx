@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './questionnaire.css';
 
 const Questionnaire = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -102,8 +103,6 @@ const Questionnaire = () => {
     setActorInput('');
   };
 
-
-  // UI Elements + Styles
   const moodLabels = {
     exciting: "🔥 Exciting",
     funny: "😄 Funny",
@@ -119,30 +118,21 @@ const Questionnaire = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <style>{`
-        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-        @keyframes slideUp { from {transform: translateY(30px); opacity:0;} to {transform:translateY(0); opacity:1;} }
-        @keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
-      `}</style>
-
-      <div style={styles.innerContainer}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>🎬 CineMatch</h1>
-          <p style={styles.subtitle}>AI-Powered Movie Recommendations</p>
+    <div className="container">
+      <div className="innerContainer">
+        <div className="header">
+          <h1 className="title">🎬 CineMatch</h1>
+          <p className="subtitle">AI-Powered Movie Recommendations</p>
         </div>
 
-        <div style={styles.card}>
+        <div className="card">
 
-          {/* STEP INDICATOR */}
           {currentStep < 6 && (
-            <div style={styles.stepIndicator}>
+            <div className="stepIndicator">
               {[1,2,3,4,5].map(step => (
-                <div key={step} style={{
-                  ...styles.step,
-                  ...(step === currentStep ? styles.stepActive : {}),
-                  ...(step < currentStep ? styles.stepCompleted : {})
-                }}>{step}</div>
+                <div key={step} className={
+                  `step ${step === currentStep ? 'stepActive' : ''} ${step < currentStep ? 'stepCompleted' : ''}`
+                }>{step}</div>
               ))}
             </div>
           )}
@@ -153,165 +143,150 @@ const Questionnaire = () => {
             </p>
           )}
 
-          {/* STEPS */}
           {currentStep === 1 && (
-            <div style={styles.questionContainer}>
-              <h2 style={styles.questionTitle}>What genres do you enjoy?</h2>
-              <div style={styles.optionsGrid}>
+            <div className="questionContainer">
+              <h2 className="questionTitle">What genres do you enjoy?</h2>
+              <div className="optionsGrid">
                 {availableGenres.map(genre => (
                   <button 
                     key={genre}
                     onClick={() => toggleGenre(genre)}
-                    style={{
-                      ...styles.optionBtn,
-                      ...(userPreferences.favorite_genres.includes(genre) ? styles.optionBtnSelected : {})
-                    }}
+                    className={`optionBtn ${userPreferences.favorite_genres.includes(genre) ? 'optionBtnSelected' : ''}`}
                   >
                     {genre}
                   </button>
                 ))}
               </div>
 
-              <button style={styles.btnPrimary} onClick={() => setCurrentStep(2)}>Next</button>
+              <button className="btnPrimary" onClick={() => setCurrentStep(2)}>Next</button>
             </div>
           )}
 
           {currentStep === 2 && (
-            <div style={styles.questionContainer}>
-              <h2 style={styles.questionTitle}>Favorite actors? (optional)</h2>
+            <div className="questionContainer">
+              <h2 className="questionTitle">Favorite actors? (optional)</h2>
 
               <input
                 value={actorInput}
                 onChange={(e) => setActorInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" ? addActor() : null}
                 placeholder="Type a name and press Enter"
-                style={styles.input}
+                className="input"
               />
 
-              <div style={styles.actorTags}>
+              <div className="actorTags">
                 {userPreferences.favorite_actors.map(actor => (
-                  <div key={actor} style={styles.actorTag}>
+                  <div key={actor} className="actorTag">
                     {actor}
-                    <button style={styles.removeBtn} onClick={() => removeActor(actor)}>×</button>
+                    <button className="removeBtn" onClick={() => removeActor(actor)}>×</button>
                   </div>
                 ))}
               </div>
 
-              <div style={styles.navButtons}>
-                <button style={styles.btnSecondary} onClick={() => setCurrentStep(1)}>Back</button>
-                <button style={styles.btnPrimary} onClick={() => setCurrentStep(3)}>Next</button>
+              <div className="navButtons">
+                <button className="btnSecondary" onClick={() => setCurrentStep(1)}>Back</button>
+                <button className="btnPrimary" onClick={() => setCurrentStep(3)}>Next</button>
               </div>
             </div>
           )}
 
           {currentStep === 3 && (
-            <div style={styles.questionContainer}>
-              <h2 style={styles.questionTitle}>What's your mood?</h2>
-              <div style={styles.optionsGrid}>
+            <div className="questionContainer">
+              <h2 className="questionTitle">What's your mood?</h2>
+              <div className="optionsGrid">
                 {availableMoods.map(m => (
                   <button 
                     key={m}
                     onClick={() => setUserPreferences(prev => ({...prev, mood: m}))}
-                    style={{
-                      ...styles.optionBtn,
-                      ...(userPreferences.mood === m ? styles.optionBtnSelected : {})
-                    }}
+                    className={`optionBtn ${userPreferences.mood === m ? 'optionBtnSelected' : ''}`}
                   >
                     {moodLabels[m]}
                   </button>
                 ))}
               </div>
 
-              <div style={styles.navButtons}>
-                <button style={styles.btnSecondary} onClick={() => setCurrentStep(2)}>Back</button>
-                <button style={styles.btnPrimary} onClick={() => setCurrentStep(4)}>Next</button>
+              <div className="navButtons">
+                <button className="btnSecondary" onClick={() => setCurrentStep(2)}>Back</button>
+                <button className="btnPrimary" onClick={() => setCurrentStep(4)}>Next</button>
               </div>
             </div>
           )}
 
           {currentStep === 4 && (
-            <div style={styles.questionContainer}>
-              <h2 style={styles.questionTitle}>Preferred era?</h2>
-              <div style={styles.optionsGridLarge}>
+            <div className="questionContainer">
+              <h2 className="questionTitle">Preferred era?</h2>
+              <div className="optionsGridLarge">
                 {availableYears.map(year => (
                   <button
                     key={year}
                     onClick={() => setUserPreferences(prev => ({ ...prev, year_preference: year }))}
-                    style={{
-                      ...styles.optionBtn,
-                      ...(userPreferences.year_preference === year ? styles.optionBtnSelected : {})
-                    }}
+                    className={`optionBtn ${userPreferences.year_preference === year ? 'optionBtnSelected' : ''}`}
                   >
                     {yearLabels[year]}
                   </button>
                 ))}
               </div>
 
-              <div style={styles.navButtons}>
-                <button style={styles.btnSecondary} onClick={() => setCurrentStep(3)}>Back</button>
-                <button style={styles.btnPrimary} onClick={() => setCurrentStep(5)}>Next</button>
+              <div className="navButtons">
+                <button className="btnSecondary" onClick={() => setCurrentStep(3)}>Back</button>
+                <button className="btnPrimary" onClick={() => setCurrentStep(5)}>Next</button>
               </div>
             </div>
           )}
 
           {currentStep === 5 && (
-            <div style={styles.questionContainer}>
-              <h2 style={styles.questionTitle}>Language?</h2>
+            <div className="questionContainer">
+              <h2 className="questionTitle">Language?</h2>
 
-              <div style={styles.optionsGrid}>
+              <div className="optionsGrid">
                 {availableLanguages.map(lang => (
                   <button
                     key={lang}
                     onClick={() => setUserPreferences(prev => ({ ...prev, language: lang }))}
-                    style={{
-                      ...styles.optionBtn,
-                      ...(userPreferences.language === lang ? styles.optionBtnSelected : {})
-                    }}
+                    className={`optionBtn ${userPreferences.language === lang ? 'optionBtnSelected' : ''}`}
                   >
                     {lang}
                   </button>
                 ))}
               </div>
 
-              <div style={styles.navButtons}>
-                <button style={styles.btnSecondary} onClick={() => setCurrentStep(4)}>Back</button>
-                <button style={styles.btnPrimary} onClick={getRecommendations}>
+              <div className="navButtons">
+                <button className="btnSecondary" onClick={() => setCurrentStep(4)}>Back</button>
+                <button className="btnPrimary" onClick={getRecommendations}>
                   Get Recommendations!
                 </button>
               </div>
             </div>
           )}
 
-          {/* LOADING */}
           {loading && (
-            <div style={styles.loadingContainer}>
-              <div style={styles.spinner}></div>
-              <p style={styles.loadingText}>Finding movies...</p>
+            <div className="loadingContainer">
+              <div className="spinner"></div>
+              <p>Finding movies...</p>
             </div>
           )}
 
-          {/* RESULTS */}
           {currentStep === 6 && !loading && recommendations.length > 0 && (
-            <div style={styles.questionContainer}>
-              <h2 style={styles.questionTitle}>Your Recommendations</h2>
+            <div className="questionContainer">
+              <h2 className="questionTitle">Your Recommendations</h2>
 
-              <div style={styles.movieGrid}>
+              <div className="movieGrid">
                 {recommendations.map((movie, i) => (
-                  <div key={i} style={styles.movieCard}>
-                    <h3 style={styles.movieTitle}>{movie.title}</h3>
-                    <p style={styles.movieYear}>{movie.year}</p>
+                  <div key={i} className="movieCard">
+                    <h3 className="movieTitle">{movie.title}</h3>
+                    <p className="movieYear">{movie.year}</p>
 
-                    <div style={styles.genreTags}>
-                      {movie.genres.map(g => <span key={g} style={styles.genreTag}>{g}</span>)}
+                    <div className="genreTags">
+                      {movie.genres.map(g => <span key={g} className="genreTag">{g}</span>)}
                     </div>
 
-                    <div style={styles.movieRating}>
+                    <div className="movieRating">
                       <span>⭐ {movie.rating.toFixed(1)}</span>
                       <span>|</span>
                       <span>👥 {formatVotes(movie.votes)}</span>
                     </div>
 
-                    <div style={styles.matchBox}>
+                    <div className="matchBox">
                       <strong>🎯 {Math.round(movie.ai_confidence * 100)}% Match</strong>
                       <br />
                       {movie.match_reason}
@@ -320,7 +295,7 @@ const Questionnaire = () => {
                 ))}
               </div>
 
-              <button style={{ ...styles.btnPrimary, margin: "30px auto", display: "block" }} onClick={restart}>
+              <button className="btnPrimary" style={{ margin: "30px auto", display: "block" }} onClick={restart}>
                 Start Over
               </button>
             </div>
@@ -330,92 +305,6 @@ const Questionnaire = () => {
       </div>
     </div>
   );
-};
-
-// ----- STYLES -----
-const styles = {
-  container: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    padding: "20px",
-    fontFamily: "Roboto, sans-serif"
-  },
-  innerContainer: { maxWidth: "1200px", margin: "0 auto" },
-  header: { textAlign: "center", color: "white", marginBottom: "40px" },
-  title: { fontSize: "3.5rem", marginBottom: "10px" },
-  subtitle: { opacity: 0.9, fontSize: "1.2rem" },
-  card: {
-    background: "white",
-    borderRadius: "20px",
-    padding: "40px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.3)"
-  },
-  stepIndicator: { display: "flex", justifyContent: "center", marginBottom: "40px", gap: "10px" },
-  step: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "50%",
-    background: "#e0e0e0",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "0.3s"
-  },
-  stepActive: { background: "#667eea", color: "white", transform: "scale(1.2)" },
-  stepCompleted: { background: "#4caf50", color: "white" },
-  questionContainer: { animation: "fadeIn 0.4s" },
-  questionTitle: { textAlign: "center", marginBottom: "30px", fontSize: "1.8rem" },
-  optionsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(150px,1fr))",
-    gap: "15px",
-    marginBottom: "30px"
-  },
-  optionsGridLarge: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))",
-    gap: "20px",
-    marginBottom: "30px"
-  },
-  optionBtn: {
-    padding: "20px",
-    borderRadius: "12px",
-    border: "2px solid #e0e0e0",
-    background: "white",
-    cursor: "pointer",
-    transition: "0.3s",
-    fontSize: "1rem"
-  },
-  optionBtnSelected: { background: "#667eea", color: "white", borderColor: "#667eea" },
-  input: {
-    width: "100%", padding: "15px", borderRadius: "10px", border: "2px solid #ccc", marginBottom: "20px"
-  },
-  actorTags: { display: "flex", gap: "10px", flexWrap: "wrap" },
-  actorTag: {
-    background: "#667eea", padding: "8px 15px", color: "white", borderRadius: "20px", display: "flex", gap: "10px"
-  },
-  removeBtn: { border: "none", background: "transparent", color: "white", cursor: "pointer" },
-  navButtons: { display: "flex", justifyContent: "space-between", marginTop: "30px" },
-  btnPrimary: { padding: "15px 40px", background: "#667eea", color: "white", borderRadius: "12px", cursor: "pointer", border: "none" },
-  btnSecondary: { padding: "15px 40px", background: "#ccc", borderRadius: "12px", cursor: "pointer", border: "none" },
-  loadingContainer: { textAlign: "center", padding: "60px" },
-  spinner: {
-    width: "50px", height: "50px", border: "4px solid #eee", borderTop: "4px solid #667eea",
-    borderRadius: "50%", animation: "spin 1s linear infinite", margin: "20px auto"
-  },
-  movieGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px,1fr))", gap: "20px" },
-  movieCard: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    padding: "25px", borderRadius: "15px", color: "white"
-  },
-  movieTitle: { fontSize: "1.4rem", fontWeight: "bold" },
-  movieYear: { opacity: 0.8 },
-  genreTags: { display: "flex", gap: "8px", flexWrap: "wrap", margin: "10px 0" },
-  genreTag: { padding: "5px 12px", background: "rgba(255,255,255,0.2)", borderRadius: "12px" },
-  movieRating: { display: "flex", gap: "10px", marginBottom: "10px" },
-  matchBox: {
-    background: "rgba(255,255,255,0.2)", padding: "10px", borderRadius: "8px"
-  }
 };
 
 export default Questionnaire;
