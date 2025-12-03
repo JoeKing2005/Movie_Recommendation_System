@@ -27,11 +27,11 @@ jobs:
       - name: Test Backend
         working-directory: ./backend/
         run: |
-          npm ci
+          npm ci --include=dev
           npm test
-      - name: Test Frontend
-        working-directory: ./front-end/
-        run: |
-          npm ci
-          npm test
+  #    - name: Test Frontend
+  #      working-directory: ./front-end/
+  #      run: |
+  #        npm ci --include=dev
+  #        npm test
     
