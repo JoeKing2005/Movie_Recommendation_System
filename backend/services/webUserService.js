@@ -1,6 +1,5 @@
 import UserService from "./userService.js";
 import WebUserModel from "../models/webUserModel.js";
-import MovieModel from "../models/movieModel.js";
 
 
 class WebUserService extends UserService {
@@ -21,26 +20,16 @@ class WebUserService extends UserService {
         return await super.deleteUserProfile(WebUserModel, uid);
     }
 
-    static async addBookmark(uid, bookmarkID) {
-        const bookmark = await MovieModel.getMovie(bookmarkID);
-        if (bookmark) return await WebUserModel.addBookmark(uid, bookmarkID);
-        else return null;
+    static async addBookmark(uid, movieData) {
+        return await WebUserModel.addBookmark(uid, movieData);
     }
 
     static async getBookmarks(uid) {
-        const bookmarks = [];
-        const bookmarkIDs = await WebUserModel.getBookmarks(uid);
-        if (bookmarkIDs){
-            for (b of bookmarkIDs) {
-                const bookmark = await MovieModel.getMovie(b);
-                bookmarks.push(bookmark);
-            }
-        } else return null;
-        return bookmarks;
+        return await WebUserModel.getBookmarks(uid);
     }
 
-    static async removeBookmark(uid, bookmarkID) {
-        return await WebUserModel.removeBookmark(uid, bookmarkID);
+    static async removeBookmark(uid, bookmarkId) {
+        return await WebUserModel.removeBookmark(uid, bookmarkId);
     }
 
     static async submitQuestionnaire(questionnaire) {

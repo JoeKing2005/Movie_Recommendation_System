@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import SignUp from "./Components/SignUp/SignUp";
 import LogIn from "./Components/LogIn/Login";
 import ResetPassword from "./Components/ResetPassword/resetPassword";
+import Bookmark from "./Components/Bookmark/bookmark";
+import Questionnaire from "./Components/Questionnaire/questionnaire";
 
 function Home() {
   return (
@@ -26,6 +28,8 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<LogIn />} />
       <Route path="/reset" element={<ResetPassword/>} /> 
+      <Route path="/bookmark" element={<Bookmark/>} />
+      <Route path="/questionnaire" element={<Questionnaire/>} />
     </Routes>
   );
 }

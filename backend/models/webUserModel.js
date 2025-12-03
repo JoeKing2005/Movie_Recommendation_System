@@ -1,4 +1,5 @@
 import UserModel from './userModel.js';
+import { db } from '../utils/firebaseConfig.js';
 
 class WebUserModel extends UserModel {
   static _dbRef = "web/users";
@@ -26,13 +27,14 @@ class WebUserModel extends UserModel {
       }
     }
 
-  static async addBookmark(uid, bookmarkID) {
+  static async addBookmark(uid, movieData) {
     const bookmarkRef = db.ref(`${this._dbRef}/${uid}/bookmarks`);
     try {
-      const snapshot = await bookmarkRef.push({id: bookmarkID});
-      console.log("New bookmark with ID", bookmarkID, "for user", uid, "with key:", snapshot.key);
+      const snapshot = await bookmarkRef.push(movieData);
+      const bookmarkKey = snapshot.key;
+      console.log("New bookmark for movie", movieData.title, "for user", uid, "with key:", bookmarkKey);
       console.log("Full reference:", snapshot.ref.toString());
-      return bookmarkID;
+      return { ...movieData, bookmarkId: bookmarkKey };
     } catch (e) {
       console.error("Error adding bookmark:", e);
       return null;
@@ -46,22 +48,25 @@ class WebUserModel extends UserModel {
       const bookmarksObject = snapshot.val();
 
       if (bookmarksObject) {
-        const bookmarksArray = Object.keys(bookmarksObject).map(key => {return {...bookmarksObject[key]}});
+        const bookmarksArray = Object.keys(bookmarksObject).map(key => {
+          return { ...bookmarksObject[key], bookmarkId: key };
+        });
         return bookmarksArray;
       } else return null;
     } catch (e) {
       console.error("Error getting bookmarks:", e);
+      return null;
     }
   }
 
-  static async removeBookmark(uid, bookmarkID) {
-    const bookmarkRef = db.ref(`${this._dbRef}/${uid}/bookmarks/${bookmarkID}`);
+  static async removeBookmark(uid, bookmarkId) {
+    const bookmarkRef = db.ref(`${this._dbRef}/${uid}/bookmarks/${bookmarkId}`);
     try {
-      await bookmarkRef.remove()
-      console.log("Removed bookmark with ID:", bookmarkID, "for user:", uid);
-      return bookmarkID;
+      await bookmarkRef.remove();
+      console.log("Removed bookmark with ID:", bookmarkId, "for user:", uid);
+      return bookmarkId;
     } catch (e) {
-      console.error("Error removing bookmark with ID:", bookmarkID, "for user:", uid, "Error:", error);
+      console.error("Error removing bookmark with ID:", bookmarkId, "for user:", uid, "Error:", e);
       return null;
     }
   }

@@ -1,6 +1,5 @@
 import UserController from "./userController.js";
 import WebUserService from "../services/webUserService.js";
-import MovieService from "../services/movieService.js";
 
 class WebUserController extends UserController {
     static async createUserProfile(req, res) {
@@ -29,13 +28,12 @@ class WebUserController extends UserController {
 
             const result = await WebUserService.submitQuestionnaire(questionnaire);
             if (result) {
-                return await MovieService.getMoviesByIds(result);
+                return res.status(200).json(result);
             } else throw("Failure submitting questionnaire.");
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 
@@ -50,56 +48,53 @@ class WebUserController extends UserController {
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 
     static async addBookmark(req, res) {
         try {
-            const bookmarkID = req.params.id;
+            const movieData = req.body;
             const uid = req.user.uid;
 
-            if (!bookmarkID) {
+            if (!movieData || !movieData.title) {
                 res.status(400);
-                throw("No Bookmark ID specified.");
+                throw("Invalid movie data provided.");
             }
 
-            const addedID = await WebUserService.addBookmark(uid, bookmarkID);
-            if (addedID) return res.status(201).send(`Added bookmark with ID ${addedID}`);
+            const addedBookmark = await WebUserService.addBookmark(uid, movieData);
+            if (addedBookmark) return res.status(201).json(addedBookmark);
             else {
-                res.status(404);
-                throw("No bookmark found with ID", bookmarkID);
+                res.status(500);
+                throw("Failed to add bookmark.");
             }
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 
     static async deleteBookmark(req, res) {
         try {
-            const bookmarkID = req.params.id;
+            const bookmarkId = req.params.id;
             const uid = req.user.uid;
 
-            if (!bookmarkID) {
+            if (!bookmarkId) {
                 res.status(400);
-                throw("No Bookmark ID specified.");
+                throw("No bookmark ID specified.");
             }
 
-            const deletedID = await WebUserService.removeBookmark(uid, bookmarkID);
-            if (deletedID) return res.status(204).send(`Removed bookmark with ID ${removedID}`);
+            const deletedId = await WebUserService.removeBookmark(uid, bookmarkId);
+            if (deletedId) return res.status(204).send(`Removed bookmark with ID ${deletedId}`);
             else {
                 res.status(404);
-                throw("No bookmark found with ID", bookmarkID);
+                throw("No bookmark found with ID", bookmarkId);
             }
         } catch (e) {
             console.error(e.message);
             console.trace();
-            if (res.status) return res.status(res.status).send(e.message);
-            else return res.status(500).send(e.message);
+            return res.status(500).send(e.message);
         }
     }
 
