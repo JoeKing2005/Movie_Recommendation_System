@@ -140,9 +140,18 @@ router.post('/:uid/questionnaire', authenticateToken, WebUserController.submitQu
  * @returns
  * On Success: 200
  * Body: [
- *      movieId1,
- *      movieId2...
- * ]
+            {
+                title: 'The Shawshank Redemption',
+                year: 1994,
+                genres: ['Drama'],
+                rating: 9.3,
+                votes: 2700000,
+                description: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
+                ai_confidence: 0.96,
+                match_reason: 'Matches your love for Drama • Highly rated (9.3/10) • Fan favorite',
+                bookmarkId: '-NqZ8xKj4lP9mQrSvWtY'
+            },
+        ]
  * On Failure: 404 "No bookmarks found."
  * 500
  */
@@ -155,7 +164,16 @@ router.get('/:uid/bookmarks', authenticateToken, WebUserController.getBookmarks)
  * URL: /api/web/users/:uid/bookmarks/:id
  * @param req
  * Method: POST
- * Body: None
+ * Body: {
+            title: 'The Godfather',
+            year: 1972,
+            genres: ['Crime', 'Drama'],
+            rating: 9.2,
+            votes: 1900000,
+            description: 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
+            ai_confidence: 0.94,
+            match_reason: 'Matches your love for Crime, Drama • Highly rated (9.2/10) • Fan favorite'
+        }
  * @returns
  * On Success: 201 "Added bookmark with ID 1"
  * On Failure: 400 "No Bookmark ID specified."
@@ -168,6 +186,7 @@ router.post('/:uid/bookmarks/:id', authenticateToken, WebUserController.addBookm
  * 
  * Requires Authentication
  * URL: /api/web/users/:uid/bookmarks/:id
+ * id e.g. '-NqZ8xKj4lP9mQrSvWtY'
  * @param req
  * Method: DELETE
  * Body: None
