@@ -15,8 +15,9 @@ jobs:
       - name: Data Visualisation Tests
         working-directory: ./data-visualisation
         run: |
-          python3 -m pip install --upgrade pandas seaborn matplotlib
-          python3 -m unittest test_preparedata.py
+          python3 -m pip install --upgrade pandas seaborn matplotlib coverage
+          coverage run -m unittest test_preparedata.py
+          coverage report --fail-under=80
 
   test-node:
     runs-on: ubuntu-latest
