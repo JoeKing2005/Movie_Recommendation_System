@@ -13,7 +13,7 @@ jobs:
     needs: run-ci
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       # Checkout
@@ -25,7 +25,6 @@ jobs:
       # Upload files to release
       - uses: softprops/action-gh-release@v2
         with:
-          upload_assets: true
           files: release-${{ github.ref_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
