@@ -8,3 +8,5 @@ key.json
 backend/key.json
 /key.*
 .vscode/
+__pycache__/
+
