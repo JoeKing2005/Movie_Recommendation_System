@@ -27,31 +27,35 @@ const SignUp = () => {
         const user = userCredential.user;
 
         const idToken = await user.getIdToken();
-
+        await fetch("http://localhost:3001/api/session/login", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken })
+        });
         const res = await fetch(`http://localhost:3001/api/web/users/${user.uid}/profile`, {
           method: "POST",
+          credentials: "include",
           headers: {
             "Authorization": `Bearer ${idToken}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             username: usernameRef.current.value
-          })
+          }),
         });
 
         if (!res.ok) {
           throw new Error("Failed to create profile on backend");
         }
-
-        const data = await res.json();
-        console.log("Profile created:", data);
-
         navigate("/questionnaire");
       } catch (error) {
         console.error(error);
         alert(error.message);
       }
     };
+
+
 
     return (
         <>

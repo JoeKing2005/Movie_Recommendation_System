@@ -1,76 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './questionnaire.css';
-
+import { auth } from '../../firebase-config';
 
 const Questionnaire = () => {
-
-    const uid = "USER_ID";
-    const authToken = "USER_AUTH_TOKEN";
-
-    const [bookmarks, setBookmarks] = useState([])
-
-    useEffect(() => {
-    const fetchBookmarks = async () => {
-        try {
-            const res = await fetch(`http://localhost:5001/api/web/users/${uid}/bookmarks`, {
-                headers: { Authorization: `Bearer ${authToken}`}
-            });
-
-            if (!res.ok) throw new Error("Could not fetch bookmarks");
-
-            const data = await res.json();
-            setBookmarks(data);
-        } catch (err) {
-            console.error(err);
-            setBookmarks([]);
-        }
-    };
-
-    fetchBookmarks();
-}, []);
-
-const toggleBookmark = async (movie) => {
-    const existing = bookmarks.find(b => b.title === movie.title);
-
-    if (existing) {
-        try {
-            const res = await fetch(`http://localhost:5001/api/web/users/${uid}/bookmarks/${existing.bookmarkID}`, {
-                method: 'DELETE',
-                headers: { Authorization: `Bearer ${authToken}` }
-            });
-            if (res.status === 204) {
-                setBookmarks(bookmarks.filter(b => b.bookmarkID !== existing.bookmarkID));
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    } else {
-        try {
-            const id = movie.title.replace(/\s+/g, "_");
-
-            const res = await fetch(`http://localhost:5001/api/web/users/${uid}/bookmarks/${id}`, {
-                method: 'POST',
-                headers : {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${authToken}`
-                },
-                body: JSON.stringify(movie)
-            });
-
-            if (res.status === 201) {
-                const newBookmark = { ...movie, bookmarkID: id };
-                setBookmarks([...bookmarks, newBookmark]);
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }
-};
-
-const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
-
-
+  const navigate = useNavigate();
+  const [bookmarks, setBookmarks] = useState([]);
+  const [loadingBookmarks, setLoadingBookmarks] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
@@ -90,6 +26,109 @@ const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
   const availableMoods = ['exciting','funny','emotional','scary','any'];
   const availableYears = ['recent','classic','any'];
   const availableLanguages = ['English','French','Spanish','German','Italian','Japanese','Korean','Hindi'];
+
+  // -------------------- USER & BOOKMARKS --------------------
+    const loadBookmarks = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      setLoadingBookmarks(true);
+
+      try {
+        const idToken = await user.getIdToken();
+        const res = await fetch(`http://localhost:3001/api/web/users/${user.uid}/bookmarks`, {
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+
+        if (!res.ok) throw new Error('Could not load bookmarks');
+        const data = await res.json();
+        setBookmarks(data);
+      } catch (err) {
+        console.error(err);
+      }
+
+      setLoadingBookmarks(false);
+    };
+    useEffect (() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (!user) {
+                navigate('/login');
+            } else {
+                loadBookmarks();
+            }
+    })
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const toggleBookmark = async (movie) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const existing = bookmarks.find(b => b.title === movie.title);
+
+    try {
+      const idToken = await user.getIdToken();
+
+      if (existing) {
+        // DELETE bookmark
+        const res = await fetch(`http://localhost:3001/api/web/users/${user.uid}/bookmarks/${existing.bookmarkId}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+        if (res.status === 204) {
+          setBookmarks(bookmarks.filter(b => b.bookmarkId !== existing.bookmarkId));
+        }
+      } else {
+        // ADD bookmark
+        const { title, year, genres, rating, votes, description, ai_confidence, match_reason } = movie;
+        const id = movie.title.replace(/\s+/g, '_');
+        const res = await fetch(`http://localhost:3001/api/web/users/${user.uid}/bookmarks/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+          body: JSON.stringify({ id, title, year, genres, rating, votes, description, ai_confidence, match_reason}),
+        });
+
+        if (res.status === 201) {
+          setBookmarks([...bookmarks, { movie, bookmarkId: id }]);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
+
+  // -------------------- QUESTIONNAIRE LOGIC --------------------
+  const toggleGenre = (genre) => {
+    setUserPreferences(prev => ({
+      ...prev,
+      favorite_genres: prev.favorite_genres.includes(genre)
+        ? prev.favorite_genres.filter(g => g !== genre)
+        : [...prev.favorite_genres, genre]
+    }));
+  };
+
+  const addActor = () => {
+    if (actorInput.trim() && !userPreferences.favorite_actors.includes(actorInput)) {
+      setUserPreferences(prev => ({
+        ...prev,
+        favorite_actors: [...prev.favorite_actors, actorInput.trim()]
+      }));
+      setActorInput('');
+    }
+  };
+
+  const removeActor = (actor) => {
+    setUserPreferences(prev => ({
+      ...prev,
+      favorite_actors: prev.favorite_actors.filter(a => a !== actor)
+    }));
+  };
 
   const getRecommendations = async () => {
     if (userPreferences.favorite_genres.length === 0) {
@@ -126,38 +165,6 @@ const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
     setLoading(false);
   };
 
-  const toggleGenre = (genre) => {
-    setUserPreferences(prev => ({
-      ...prev,
-      favorite_genres: prev.favorite_genres.includes(genre)
-        ? prev.favorite_genres.filter(g => g !== genre)
-        : [...prev.favorite_genres, genre]
-    }));
-  };
-
-  const addActor = () => {
-    if (actorInput.trim() && !userPreferences.favorite_actors.includes(actorInput)) {
-      setUserPreferences(prev => ({
-        ...prev,
-        favorite_actors: [...prev.favorite_actors, actorInput.trim()]
-      }));
-      setActorInput('');
-    }
-  };
-
-  const removeActor = (actor) => {
-    setUserPreferences(prev => ({
-      ...prev,
-      favorite_actors: prev.favorite_actors.filter(a => a !== actor)
-    }));
-  };
-
-  const formatVotes = (votes) => {
-    if (votes >= 1_000_000) return (votes / 1_000_000).toFixed(1) + "M";
-    if (votes >= 1_000) return (votes / 1_000).toFixed(1) + "K";
-    return votes;
-  };
-
   const restart = () => {
     setCurrentStep(1);
     setRecommendations([]);
@@ -170,6 +177,12 @@ const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
       language: 'English'
     });
     setActorInput('');
+  };
+
+  const formatVotes = (votes) => {
+    if (votes >= 1_000_000) return (votes / 1_000_000).toFixed(1) + "M";
+    if (votes >= 1_000) return (votes / 1_000).toFixed(1) + "K";
+    return votes;
   };
 
   const moodLabels = {
@@ -186,11 +199,14 @@ const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
     any: "🎬 Any Era"
   };
 
+  if (loadingBookmarks) {
+    return <p className="loading">Loading your profile...</p>;
+  }
   return (
     <div className="container">
       <div className="innerContainer">
         <div className="header">
-          <h1 className="title">🎬 CineMatch</h1>
+          <h1 className="title">🎬 Movie Recommendation System</h1>
           <p className="subtitle">AI-Powered Movie Recommendations</p>
         </div>
 
@@ -372,11 +388,11 @@ const isBookmarked = (movie) => bookmarks.some(b => b.title === movie.title);
                 Start Over
               </button>
 
-              <Link to="/bookmarks">
+              <Link to="/bookmark">
               <button className="btnPrimary">
                 View My Bookmarks
               </button>
-              </Link>
+              </Link> 
             </div>
           )}
 

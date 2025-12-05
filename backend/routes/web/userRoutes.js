@@ -179,7 +179,7 @@ router.get('/:uid/bookmarks', authenticateToken, WebUserController.getBookmarks)
  * On Failure: 400 "No Bookmark ID specified."
  * 500
  */
-router.post('/:uid/bookmarks/:id', authenticateToken, WebUserController.addBookmark);
+router.post('/:uid/bookmarks/', authenticateToken, WebUserController.addBookmark);
 
 /**
  * Delete Bookmark
