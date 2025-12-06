@@ -126,7 +126,7 @@
     width: 30px;
 }
 
-/* Bookmark button base */
+
 .btnBookmark {
     padding: 8px 16px;
     font-size: 14px;
@@ -141,21 +141,20 @@
     gap: 6px;
 }
 
-/* Hover effect */
+
 .btnBookmark:hover {
     background-color: #ffcc00;
     color: #fff;
     transform: scale(1.05);
 }
 
-/* When bookmarked */
 .btnBookmark.bookmarked {
     background-color: #ffcc00;
     color: #fff;
     border-color: #ffcc00;
 }
 
-/* Optional: make the star icon stand out */
+
 .btnBookmark span {
     font-size: 16px;
 }

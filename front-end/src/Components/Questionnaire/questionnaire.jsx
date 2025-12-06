@@ -28,7 +28,7 @@ const Questionnaire = () => {
   const availableYears = ['recent','classic','any'];
   const availableLanguages = ['English','French','Spanish','German','Italian','Japanese','Korean','Hindi'];
 
-  // -------------------- USER & BOOKMARKS --------------------
+  
     const loadBookmarks = async () => {
       const user = auth.currentUser;
       if (!user) {

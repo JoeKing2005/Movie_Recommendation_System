@@ -9,7 +9,7 @@ const Bookmark = () => {
     const [bookmarks, setBookmarks] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Load bookmarks on component mount
+
     useEffect(() => {
         const loadBookmarks = async () => {
             const user = auth.currentUser;
@@ -27,7 +27,7 @@ const Bookmark = () => {
         loadBookmarks();
     }, []);
 
-    // Remove bookmark
+   
     const removeBookmark = async (bookmarkId) => {
         const user = auth.currentUser;
         if (!user) return;
@@ -51,7 +51,7 @@ const Bookmark = () => {
         }
     };
 
-    // Add a bookmark (example, you can call this from a button elsewhere)
+    
     const addBookmark = async (movie) => {
         const user = auth.currentUser;
         if (!user) return;

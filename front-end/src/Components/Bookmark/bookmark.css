@@ -1,7 +1,7 @@
 .goToQuestionnaire {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #4caf50; /* green button */
+    background-color: #4caf50; 
     color: white;
     border: none;
     border-radius: 5px;
@@ -10,26 +10,26 @@
 }
 
 .goToQuestionnaire:hover {
-    background-color: #45a049; /* slightly darker on hover */
+    background-color: #45a049;
 }
 .top-right-container {
-    position: fixed; /* Fix it at the top */
-    top: 10px;       /* spacing from top */
-    right: 10px;     /* spacing from right */
+    position: fixed; 
+    top: 10px;       
+    right: 10px;    
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 5px 10px;
     border-radius: 8px;
-    box-shadow: none; /* remove shadow if you want fully transparent */
-    z-index: 1000; /* stay above other elements */
-    background-color: transparent; /* fully transparent */
+    box-shadow: none; 
+    z-index: 1000; 
+    background-color: transparent; 
 }
 
 .top-right-container .title {
-    font-size: 16px;  /* smaller text */
+    font-size: 16px;  
     font-weight: bold;
-    white-space: nowrap; /* prevent wrapping */
+    white-space: nowrap; 
 }
 
 .top-right-container .logo img {
