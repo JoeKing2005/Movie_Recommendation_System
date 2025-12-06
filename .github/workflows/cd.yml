@@ -1,0 +1,30 @@
+name: Prepare Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  # Run CI script
+  run-ci:
+    uses: ./.github/workflows/ci.yml
+
+  create-release:
+    needs: run-ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      # Checkout
+      - uses: actions/checkout@v4
+
+      # Zip up release files
+      - run: zip -r release-${{ github.ref_name }}.zip ./data-visualisation ./backend ./front-end ./Clean_Analyse.py ./ai_recommender.py ./cleaned_data.csv ./requirements.txt
+
+      # Upload files to release
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release-${{ github.ref_name }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

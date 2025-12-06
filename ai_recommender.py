@@ -179,7 +179,7 @@ try:
     print(f"📊 Sample actors: {df['actors'].head()}")
     
 except Exception as e:
-    print(f"❌ Error loading dataset: {e}")
+    print(f" Error loading dataset: {e}")
     df = pd.DataFrame()
 
 # ============================================================================
@@ -325,9 +325,25 @@ class AIRecommender:
         # Get top recommendations
         recommendations = filtered.nlargest(top_n, 'ai_score')
         
+        # Calculate max possible score for normalization
+        max_possible_score = (
+            len(user_preferences.get('favorite_genres', [])) * 3.0 * 3.0 +  # genre_score * weight
+            len(user_preferences.get('favorite_actors', [])) * 10.0 * 5.0 +  # actor_score * weight
+            2.0 * 1.5 +  # max mood_score * weight
+            10.0 * 0.5 +  # max rating * weight
+            np.log1p(1000000) * 0.3  # high votes score
+        )
+        
+        # Ensure max_possible_score is at least 20 to avoid division issues
+        if max_possible_score < 20:
+            max_possible_score = 20
+        
         # Format output
         results = []
         for _, movie in recommendations.iterrows():
+            # Calculate normalized confidence percentage (0-100%)
+            normalized_confidence = min(100, (movie['ai_score'] / max_possible_score) * 100)
+            
             results.append({
                 'title': movie['title'],
                 'year': int(movie['year']),

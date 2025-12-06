@@ -1,0 +1,40 @@
+name: Test backend and frontend
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_call:
+
+jobs:
+  test-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Data Visualisation Tests
+        working-directory: ./data-visualisation
+        run: |
+          python3 -m pip install --upgrade pandas seaborn matplotlib coverage
+          coverage run -m unittest test_preparedata.py
+          coverage report --fail-under=80
+
+  test-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test Backend
+        working-directory: ./backend/
+        run: |
+          npm ci --include=dev
+          npm test
+  #    - name: Test Frontend
+  #      working-directory: ./front-end/
+  #      run: |
+  #        npm ci --include=dev
+  #        npm test
+    
