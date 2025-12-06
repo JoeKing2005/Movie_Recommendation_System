@@ -13,12 +13,14 @@
     "react-dom": "18.2.0",
     "react-router-dom": "^6.30.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yaml": "^2.8.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --watchAll=false --coverage --testPathIgnorePatterns=App.test.js --collectCoverageFrom='src/Components/**/*.{js,jsx}' --collectCoverageFrom='src/utils/**/*.{js,jsx}'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
