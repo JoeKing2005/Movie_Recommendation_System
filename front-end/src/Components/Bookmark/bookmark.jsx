@@ -3,6 +3,7 @@ import './bookmark.css';
 import movie_icon from '../assets/movie icon.png';
 import { auth } from '../../firebase-config';
 import fetchBookmarks from "../../utils/fetchBookmarks";
+import { Link } from "react-router-dom";
 
 const Bookmark = () => {
     const [bookmarks, setBookmarks] = useState([]);
@@ -126,6 +127,14 @@ const Bookmark = () => {
                         ))}
                     </div>
                 )}
+
+                <div style={{ marginTop: "30px", textAlign: "center"}}>
+                    <Link to ="/questionnaire">
+                    <button className="btnPrimary">
+                        Go to Questionnaire
+                    </button>
+                    </Link>
+                </div>
             </div>
         </>
     );

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './questionnaire.css';
 import { auth } from '../../firebase-config';
+import movie_icon from '../assets/movie icon.png';
 
 const Questionnaire = () => {
   const navigate = useNavigate();
@@ -15,9 +16,9 @@ const Questionnaire = () => {
   const [userPreferences, setUserPreferences] = useState({
     favorite_genres: [],
     favorite_actors: [],
-    mood: 'any',
-    year_preference: 'any',
-    language: 'English'
+    mood: '',
+    year_preference: '',
+    language: ''
   });
 
   const [actorInput, setActorInput] = useState('');
@@ -136,6 +137,18 @@ const Questionnaire = () => {
       return;
     }
 
+    if (userPreferences.favorite_genres.includes("Documentary") && !userPreferences.year_preference) {
+      alert("Please select a preferred year for Documentaries!");
+      setCurrentStep(4);
+      return;
+    }
+
+    if (userPreferences.favorite_genres.includes("Animation") && !userPreferences.language) {
+      alert("Please select a language for Animation!");
+      setCurrentStep(5);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -205,10 +218,13 @@ const Questionnaire = () => {
   return (
     <div className="container">
       <div className="innerContainer">
-        <div className="header">
-          <h1 className="title">🎬 Movie Recommendation System</h1>
-          <p className="subtitle">AI-Powered Movie Recommendations</p>
-        </div>
+        <div className="top-right-container">
+  <div className="title">Movie Recommendation System</div>
+  <div className="logo">
+    <img src={movie_icon} height={30} width={30} alt="logo" />
+    </div>
+  </div>
+
 
         <div className="card">
 

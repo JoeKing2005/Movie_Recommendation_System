@@ -1,0 +1,61 @@
+.goToQuestionnaire {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4caf50; /* green button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.goToQuestionnaire:hover {
+    background-color: #45a049; /* slightly darker on hover */
+}
+.top-right-container {
+    position: fixed; /* Fix it at the top */
+    top: 10px;       /* spacing from top */
+    right: 10px;     /* spacing from right */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: none; /* remove shadow if you want fully transparent */
+    z-index: 1000; /* stay above other elements */
+    background-color: transparent; /* fully transparent */
+}
+
+.top-right-container .title {
+    font-size: 16px;  /* smaller text */
+    font-weight: bold;
+    white-space: nowrap; /* prevent wrapping */
+}
+
+.top-right-container .logo img {
+    height: 30px;  
+    width: 30px;
+}
+
+.btnBookmarkRemove {
+    padding: 6px 14px;
+    font-size: 14px;
+    border: 2px solid #ff4d4d;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #ff4d4d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    display: inline-block;
+}
+.btnBookmarkRemove:hover {
+    background-color: #ff4d4d;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+
+.btnBookmarkRemove:active {
+    transform: scale(0.95);
+}
