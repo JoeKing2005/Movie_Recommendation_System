@@ -174,12 +174,12 @@ try:
         df['language_list'] = [['English'] for _ in range(len(df))]
         df['language_list_lower'] = [['english'] for _ in range(len(df))]
     
-    print("✅ Dataset prepared with basic genres")
-    print(f"📊 Sample languages: {df['language_list'].head()}")
-    print(f"📊 Sample actors: {df['actors'].head()}")
+    print(" Dataset prepared with basic genres")
+    # print(f" Sample languages: {df['language_list'].head()}")
+    # print(f" Sample actors: {df['actors'].head()}")
     
 except Exception as e:
-    print(f"❌ Error loading dataset: {e}")
+    print(f" Error loading dataset: {e}")
     df = pd.DataFrame()
 
 # ============================================================================
@@ -201,25 +201,32 @@ class AIRecommender:
         # Start with full dataset
         filtered = self.df.copy()
         
-        # FIX 3: Improved language filtering (case-insensitive, exact match in list)
+        # FIX 3: Language filtering - check FIRST language only (original language)
         if 'language' in user_preferences and user_preferences['language'] and user_preferences['language'].lower() != 'any':
             user_lang = user_preferences['language'].lower().strip()
             initial_count = len(filtered)
             
-            # Keep movies that have the requested language in their language list
+            # Only check the FIRST language in the list (original language of the movie)
+            # This prevents showing dubbed movies
             filtered = filtered[filtered['language_list_lower'].apply(
-                lambda langs: user_lang in [lang.strip() for lang in langs]
+                lambda langs: len(langs) > 0 and langs[0].strip() == user_lang
             )]
             
-            print(f"🌍 Language filter: '{user_preferences['language']}'")
-            print(f"🌍 Before filter: {initial_count} movies")
-            print(f"🌍 After filter: {len(filtered)} movies")
+            # print(f"🌍 Language filter: '{user_preferences['language']}' (original language only)")
+            # print(f"🌍 Before filter: {initial_count} movies")
+            # print(f"🌍 After filter: {len(filtered)} movies")
             
-            # If language filter resulted in too few movies, relax it
+            # If language filter resulted in too few movies, relax to include if it's in top 2 languages
             if len(filtered) < 20:
-                print("⚠️ Too few results with strict language filter, relaxing...")
+                print("⚠️ Too few results, relaxing to top 2 languages...")
                 filtered = self.df.copy()
-                # Apply year filter again if needed
+                filtered = filtered[filtered['language_list_lower'].apply(
+                    lambda langs: len(langs) > 0 and user_lang in [l.strip() for l in langs[:2]]
+                )]
+                
+                # Apply year filter again if needed since we reset
+                year_pref = user_preferences.get('year_preference', 'any')
+                current_year = 2024
                 if year_pref == 'recent':
                     filtered = filtered[filtered['year'] >= current_year - 10]
                 elif year_pref == 'classic':
@@ -258,13 +265,12 @@ class AIRecommender:
                 movie_actors_lower = row['actors_lower']
                 score = 0
                 
-                # Check if any favorite actor matches exactly (not partial)
+                # Check if any favorite actor matches exactly (STRICT - must be exact match)
                 for fav_actor in favorite_actors_lower:
                     for movie_actor in movie_actors_lower:
-                        # Must be exact match or one is contained as a complete name
-                        if fav_actor == movie_actor or (
-                            len(fav_actor.split()) >= 2 and fav_actor in movie_actor
-                        ):
+                        # STRICT: Only exact match, no partial matching
+                        # This prevents "Tom Holland" from matching "Tom Hollander"
+                        if fav_actor == movie_actor:
                             score += 10  # Strong boost for actor match
                             matching_movies += 1
                             break
@@ -272,8 +278,8 @@ class AIRecommender:
                 actor_scores.append(score)
             
             filtered['actor_score'] = actor_scores
-            print(f"🎭 Actor scoring complete. Found {matching_movies} movies with matching actors")
-            print(f"🎭 Searching for: {favorite_actors}")
+            print(f" Actor scoring complete. Found {matching_movies} movies with matching actors")
+            print(f" Searching for: {favorite_actors}")
         else:
             filtered['actor_score'] = 0
         
@@ -325,9 +331,25 @@ class AIRecommender:
         # Get top recommendations
         recommendations = filtered.nlargest(top_n, 'ai_score')
         
+        # Calculate max possible score for normalization
+        max_possible_score = (
+            len(user_preferences.get('favorite_genres', [])) * 3.0 * 3.0 +  # genre_score * weight
+            len(user_preferences.get('favorite_actors', [])) * 10.0 * 5.0 +  # actor_score * weight
+            2.0 * 1.5 +  # max mood_score * weight
+            10.0 * 0.5 +  # max rating * weight
+            np.log1p(1000000) * 0.3  # high votes score
+        )
+        
+        # Ensure max_possible_score is at least 20 to avoid division issues
+        if max_possible_score < 20:
+            max_possible_score = 20
+        
         # Format output
         results = []
         for _, movie in recommendations.iterrows():
+            # Calculate normalized confidence percentage (0-100%)
+            normalized_confidence = min(100, (movie['ai_score'] / max_possible_score) * 100)
+            
             results.append({
                 'title': movie['title'],
                 'year': int(movie['year']),
@@ -337,7 +359,7 @@ class AIRecommender:
                 'description': movie.get('description', 'No description available'),
                 'actors': movie['actors'][:5],  # Include top 5 actors
                 'languages': movie['language_list'],  # Include languages
-                'ai_confidence': round(float(movie['ai_score']) / 10, 2),
+                'ai_confidence': round(normalized_confidence / 100, 2),  # Store as 0-1 for frontend
                 'match_reason': self._generate_match_reason(movie, user_preferences)
             })
         
@@ -354,19 +376,17 @@ class AIRecommender:
         if matching_genres:
             reasons.append(f"Matches your love for {', '.join(matching_genres)}")
         
-        # Actor match (case-insensitive)
+        # Actor match (STRICT - exact match only)
         fav_actors = preferences.get('favorite_actors', [])
         if fav_actors:
-            fav_actors_lower = [a.lower() for a in fav_actors]
+            fav_actors_lower = [a.lower().strip() for a in fav_actors]
             movie_actors_lower = movie['actors_lower']
             
-            # Find matching actors (original case)
+            # Find exactly matching actors (original case)
             matching_actors = []
             for i, actor_lower in enumerate(movie_actors_lower):
-                for fav_lower in fav_actors_lower:
-                    if fav_lower in actor_lower:
-                        matching_actors.append(movie['actors'][i])
-                        break
+                if actor_lower in fav_actors_lower:  # Exact match only
+                    matching_actors.append(movie['actors'][i])
             
             if matching_actors:
                 reasons.append(f"Features {matching_actors[0]}")
@@ -453,7 +473,7 @@ def ai_recommend():
         }), 200
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f" Error: {e}")
         return jsonify({
             "status": "error",
             "message": str(e)
@@ -503,85 +523,29 @@ def health_check():
     }), 200
 
 
-@app.route('/api/ai/debug/search-actor', methods=['GET'])
-def debug_search_actor():
-    """Debug endpoint to search for movies by actor name"""
-    actor_name = request.args.get('name', '')
-    
-    if not actor_name:
-        return jsonify({"error": "Please provide ?name=ActorName"}), 400
-    
-    actor_lower = actor_name.lower().strip()
-    
-    # Find movies with this actor
-    matching_movies = []
-    for _, row in df.iterrows():
-        if any(actor_lower in actor.lower() for actor in row['actors']):
-            matching_movies.append({
-                'title': row['title'],
-                'year': int(row['year']),
-                'actors': row['actors'][:5],
-                'languages': row['language_list']
-            })
-        
-        if len(matching_movies) >= 10:
-            break
-    
-    return jsonify({
-        "search": actor_name,
-        "found": len(matching_movies),
-        "movies": matching_movies
-    }), 200
-
-
-@app.route('/api/ai/debug/search-language', methods=['GET'])
-def debug_search_language():
-    """Debug endpoint to search for movies by language"""
-    language = request.args.get('lang', 'French')
-    
-    lang_lower = language.lower().strip()
-    
-    # Find movies with this language
-    matching_movies = []
-    for _, row in df.iterrows():
-        if lang_lower in [l.lower().strip() for l in row['language_list']]:
-            matching_movies.append({
-                'title': row['title'],
-                'year': int(row['year']),
-                'languages': row['language_list'],
-                'genres': row['basic_genres']
-            })
-        
-        if len(matching_movies) >= 10:
-            break
-    
-    return jsonify({
-        "search": language,
-        "found_in_dataset": len([r for _, r in df.iterrows() 
-                                  if lang_lower in [l.lower().strip() for l in r['language_list']]]),
-        "sample_movies": matching_movies
-    }), 200
-
-
 @app.route('/', methods=['GET'])
 def home():
     """API documentation"""
     return jsonify({
-        "message": "Netflix AI Recommendation API - FIXED VERSION",
+        "message": "Netflix AI Recommendation API",
         "version": "2.1",
-        "fixes": [
-            "✅ Language filtering now works with case-insensitive partial matching",
-            "✅ Actor matching now works with case-insensitive partial matching",
-            "✅ Uses 'stars' column instead of 'cast' for actor data",
-            "✅ Parses 'languages' column as list"
-        ],
         "endpoints": {
             "GET /api/ai/health": "Health check",
             "GET /api/ai/info": "Get available genres, actors, moods, etc.",
             "POST /api/ai/recommend": "Get AI recommendations",
-            "GET /api/ai/quick-recommend": "Quick recommendations with query params",
-            "GET /api/ai/debug/search-actor?name=Tom Hardy": "Debug: Find movies by actor",
-            "GET /api/ai/debug/search-language?lang=French": "Debug: Find movies by language"
+            "GET /api/ai/quick-recommend": "Quick recommendations with query params"
+        },
+        "example_request": {
+            "url": "/api/ai/recommend",
+            "method": "POST",
+            "body": {
+                "favorite_genres": ["Action", "Thriller"],
+                "favorite_actors": ["Tom Holland"],
+                "mood": "exciting",
+                "year_preference": "recent",
+                "language": "English",
+                "num_recommendations": 10
+            }
         }
     }), 200
 
@@ -592,12 +556,10 @@ def home():
 
 if __name__ == '__main__':
     print("\n" + "="*70)
-    print("🤖 AI-POWERED MOVIE RECOMMENDATION API - FIXED VERSION")
     print("="*70)
-    print(f"\n✅ Loaded {len(df)} movies with {len(BASIC_GENRES)} basic genres")
+    print(f"\n Loaded {len(df)} movies with {len(BASIC_GENRES)} basic genres")
     print(f"🔧 Server starting on http://localhost:5001")
-    print("📖 API docs at http://localhost:5001\n")
-    print("🎬 Basic Genres:", ", ".join(BASIC_GENRES))
+    print(" API docs at http://localhost:5001\n")
     print("\n" + "="*70 + "\n")
     
     app.run(debug=True, host='0.0.0.0', port=5001)
