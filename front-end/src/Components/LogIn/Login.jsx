@@ -22,10 +22,22 @@ const LogIn = () => {
             );
             const user = userCredential.user;
             const idToken = await user.getIdToken();
+            await fetch("http://localhost:3001/api/session/login", {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ idToken })
+            });
 
             const res = await fetch(`http://localhost:3001/api/web/users/${user.uid}/profile`, {
+                method: "GET",
+                credentials: "include",
                 headers: {authorization: `Bearer ${idToken}`}
             });
+
+            if (!res.ok) {
+                throw new Error("Could not load user profile");
+            }
             const profile = await res.json();
             console.log("User profile:", profile);
 
