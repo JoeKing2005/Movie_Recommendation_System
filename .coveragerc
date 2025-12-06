@@ -1,0 +1,7 @@
+[run]
+omit =
+    */site-packages/*
+    */.venv/*
+    */venv/*
+    test_*
+    /usr/*
