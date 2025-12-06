@@ -51,7 +51,7 @@ const Bookmark = () => {
         }
     };
 
-    
+    /*
     const addBookmark = async (movie) => {
         const user = auth.currentUser;
         if (!user) return;
@@ -86,7 +86,7 @@ const Bookmark = () => {
         } catch (err) {
             console.error("Error adding bookmark:", err);
         }
-    };
+    };*/
 
     return (
         <>

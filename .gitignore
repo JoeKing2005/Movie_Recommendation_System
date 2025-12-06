@@ -9,4 +9,5 @@ backend/key.json
 /key.*
 .vscode/
 __pycache__/
-
+backend/key.*
+backend/coverage/
