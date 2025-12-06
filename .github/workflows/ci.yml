@@ -8,7 +8,7 @@ on:
   workflow_call:
 
 jobs:
-  test-python:
+  test-data-visualisation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,6 +17,17 @@ jobs:
         run: |
           python3 -m pip install --upgrade pandas seaborn matplotlib coverage
           coverage run -m unittest test_preparedata.py
+          coverage report --fail-under=80
+
+  test-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: AI Tests
+        working-directory: .
+        run: |
+          pip3 install -r requirements.txt
+          coverage run -m unittest test_ai_recommender test_clean_analyse
           coverage report --fail-under=80
 
   test-node:
@@ -32,9 +43,9 @@ jobs:
         run: |
           npm ci --include=dev
           npm test
-  #    - name: Test Frontend
-  #      working-directory: ./front-end/
-  #      run: |
-  #        npm ci --include=dev
-  #        npm test
+      - name: Test Frontend
+        working-directory: ./front-end/
+        run: |
+          npm ci --include=dev
+          npm test
     
